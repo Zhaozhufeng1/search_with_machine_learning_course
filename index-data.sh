@@ -49,3 +49,4 @@ nohup bin/logstash --pipeline.workers 1 --path.data ./products_data -f "$PRODUCT
 echo " Cleaning up any old indexing information by deleting query_data.  If this is the first time you are running this, you might see an error."
 rm -rf "$LOGSTASH_HOME/query_data"
 nohup bin/logstash --pipeline.workers 1 --path.data ./query_data -f "$QUERIES_LOGSTASH_FILE" > queries_indexing.log &
+

@@ -24,6 +24,56 @@ client = OpenSearch(
 print(client.cat.health())
 print(client.cat.indices())
 
+print(client.cat.count("bbuy_products", params={"v": "true"}))
+print(client.cat.count("bbuy_queries", params={"v": "true"}))
+
+index_name='bbuy_products'
+
+###################
+# Aggregations at the department level
+
+query = {
+    'size': 0,
+    'query': {
+        "match_all": {}
+    },
+    'aggs': {
+        "department": {
+            "terms": {
+                "field": "department.keyword",
+                "size": 100,
+                "missing": "N/A",
+                "min_doc_count": 0
+            }
+        }
+    }
+}
+
+client.search(
+    body=query,
+    index=index_name
+)
+
+###count the products having images missing
+query = {
+    'size': 0,
+    'query': {
+        "match_all": {}
+    },
+    'aggs' : {
+        "Missing_Field" : {
+            "missing": { "field": "image.keyword" }
+        }
+    }
+}
+
+client.search(
+    body=query,
+    index=index_name
+)
+
+
+
 # If you still have your documents from the Dev Tools test, we should be able to check them here:
 print(client.cat.count("searchml_test", params={"v": "true"}))
 
