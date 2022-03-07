@@ -9,6 +9,12 @@ input {
         }
     #mode => "read"
     #exit_after_read => "true"
+    mode => "read"
+    exit_after_read => true
+    file_completed_action => "log"
+    file_completed_log_path => "/dev/null"
+    file_chunk_size => 100000000
+    sincedb_path => "/dev/null"
   }
 }
   filter {

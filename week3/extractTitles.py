@@ -4,7 +4,9 @@ import xml.etree.ElementTree as ET
 import argparse
 from pathlib import Path
 
-directory = r'/workspace/search_with_machine_learning_course/week3/pruned_products'
+from createContentTrainingData import normalize_text
+
+directory = r'/workspace/search_with_machine_learning_course/data/pruned_products'
 parser = argparse.ArgumentParser(description='Process some integers.')
 general = parser.add_argument_group("general")
 general.add_argument("--input", default=directory,  help="The directory containing the products")
@@ -26,8 +28,8 @@ if args.input:
 sample_rate = args.sample_rate
 
 def transform_training_data(name):
-    # IMPLEMENT
-    return name.replace('\n', ' ')
+    #implement
+    return normalize_text(name, stem=False, remove_digits=False, remove_stop_words=False)
 
 # Directory for product data
 

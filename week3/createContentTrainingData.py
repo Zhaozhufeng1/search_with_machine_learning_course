@@ -4,12 +4,48 @@ import random
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem.snowball import SnowballStemmer
+from nltk.tokenize import word_tokenize
+
+# Do some setup work
+nltk.download('words')
+nltk.download('maxent_ne_chunker')
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('popular')
+
 def transform_name(product_name):
     # IMPLEMENT
-    return product_name
+    return normalize_text(product_name)
+
+def normalize_text(text: str, stem: bool = True, remove_stop_words: bool = True, lower_case: bool = True,
+                   remove_digits: bool = True, remove_punctuation: bool = True) -> str:
+    stemmer = SnowballStemmer("english")
+    stop_words = set(stopwords.words('english'))
+    text = text.replace("®", "").replace("™", "")
+    if remove_digits:
+        chars = [c for c in text if not c.isdigit()]
+        text = "".join(chars)
+    if lower_case:
+        results = word_tokenize(text.lower())
+    else:
+        results = word_tokenize(text)
+    if remove_stop_words:
+        results = [w for w in results if w not in stop_words]
+    if remove_punctuation:
+        punctuation = ".!?()[]{}\\`/-.':`,<>.".split()
+        punctuation.append("''")
+        punctuation.append("-")
+        punctuation = set(punctuation)
+        results = [w for w in results if w not in punctuation]
+    if stem:
+        results = [stemmer.stem(t) for t in results]
+    return " ".join(results)
 
 # Directory for product data
-directory = r'/workspace/search_with_machine_learning_course/week3/pruned_products/'
+directory = r'/workspace/search_with_machine_learning_course/data/pruned_products/'
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 general = parser.add_argument_group("general")
@@ -56,3 +92,8 @@ with open(output_file, 'w') as output:
                       name = child.find('name').text.replace('\n', ' ')
                       output.write("__label__%s %s\n" % (cat, transform_name(name)))
 
+#Updating min_products
+#import pandas as pd
+#data = pd.read_csv(output_file, delimiter="\t", names=["categories", "products"])
+#data = data.groupby(["categories"]).filter(lambda x: len(x) >= min_products)
+#data.to_csv(output_file, sep="\t",header=False, index=False) 
